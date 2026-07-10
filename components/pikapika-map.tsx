@@ -34,6 +34,15 @@ type ProgressBar = {
   color: string;
 };
 
+type WardPlacement = {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  radius: number;
+  rotate: string;
+};
+
 const APP_CONFIG = {
   postToClearRatio: 0.55,
   burstCountForLargeButton: 8,
@@ -73,6 +82,25 @@ const APP_CONFIG = {
   ] satisfies Ward[],
 };
 
+const WARD_LAYOUT: Record<string, WardPlacement> = {
+  moriyama: { x: 50, y: 2, w: 25, h: 15, radius: 22, rotate: "3deg" },
+  kita: { x: 31, y: 8, w: 22, h: 14, radius: 20, rotate: "-4deg" },
+  nishi: { x: 13, y: 16, w: 23, h: 15, radius: 22, rotate: "3deg" },
+  higashi: { x: 48, y: 18, w: 20, h: 13, radius: 18, rotate: "-2deg" },
+  chikusa: { x: 66, y: 18, w: 22, h: 15, radius: 20, rotate: "3deg" },
+  meito: { x: 75, y: 33, w: 20, h: 14, radius: 20, rotate: "-5deg" },
+  nakamura: { x: 12, y: 33, w: 25, h: 15, radius: 24, rotate: "-3deg" },
+  naka: { x: 38, y: 33, w: 21, h: 15, radius: 18, rotate: "2deg" },
+  showa: { x: 59, y: 35, w: 19, h: 14, radius: 18, rotate: "-3deg" },
+  nakagawa: { x: 3, y: 50, w: 28, h: 18, radius: 26, rotate: "2deg" },
+  atsuta: { x: 32, y: 50, w: 21, h: 14, radius: 18, rotate: "-2deg" },
+  mizuho: { x: 54, y: 50, w: 20, h: 14, radius: 18, rotate: "3deg" },
+  tempaku: { x: 72, y: 51, w: 23, h: 16, radius: 24, rotate: "-2deg" },
+  minato: { x: 0, y: 69, w: 34, h: 24, radius: 30, rotate: "-3deg" },
+  minami: { x: 35, y: 68, w: 24, h: 17, radius: 22, rotate: "2deg" },
+  midori: { x: 58, y: 69, w: 34, h: 22, radius: 30, rotate: "3deg" },
+};
+
 function clamp(value: number, min: number, max: number) {
   return Math.max(min, Math.min(max, value));
 }
@@ -101,8 +129,7 @@ export default function PikapikaMapScreen() {
   const [confettiSeed, setConfettiSeed] = useState(0);
 
   const mapSize = Math.min(width - 44, 420);
-  const tileGap = 5;
-  const tileSize = (mapSize - tileGap * 3) / 4;
+  const mapHeight = mapSize * 1.18;
 
   const averageClearRate = useMemo(() => {
     const total = wards.reduce((sum, ward) => sum + ward.clearRate, 0);
@@ -225,30 +252,64 @@ export default function PikapikaMapScreen() {
               style={{
                 alignSelf: "center",
                 width: mapSize,
-                minHeight: mapSize * 1.15,
-                flexDirection: "row",
-                flexWrap: "wrap",
-                gap: tileGap,
-                backgroundColor: "#dff4d7",
-                borderRadius: 32,
+                height: mapHeight,
+                backgroundColor: "#d8f1d2",
+                borderRadius: 36,
                 borderCurve: "continuous",
-                padding: 8,
+                borderColor: "rgba(255,255,255,0.88)",
+                borderWidth: 3,
                 overflow: "hidden",
+                position: "relative",
               }}
             >
-              {wards.map((ward) => (
-                <WardTile
-                  key={ward.id}
-                  ward={ward}
-                  size={tileSize}
-                  selected={ward.id === selectedWardId}
-                  sparkling={sparkWardIds.includes(ward.id)}
-                  onPress={() => {
-                    setSelectedWardId(ward.id);
-                    sparkleWard(ward.id);
-                  }}
+              <NagoyaMapBackdrop />
+              {wards.map((ward) => {
+                const placement = WARD_LAYOUT[ward.id];
+                return (
+                  <WardTile
+                    key={ward.id}
+                    ward={ward}
+                    width={(mapSize * placement.w) / 100}
+                    height={(mapHeight * placement.h) / 100}
+                    placement={{
+                      left: (mapSize * placement.x) / 100,
+                      top: (mapHeight * placement.y) / 100,
+                      radius: placement.radius,
+                      rotate: placement.rotate,
+                    }}
+                    selected={ward.id === selectedWardId}
+                    sparkling={sparkWardIds.includes(ward.id)}
+                    onPress={() => {
+                      setSelectedWardId(ward.id);
+                      sparkleWard(ward.id);
+                    }}
+                  />
+                );
+              })}
+              <View
+                pointerEvents="none"
+                style={{
+                  position: "absolute",
+                  left: "5%",
+                  right: "7%",
+                  bottom: "3%",
+                  height: 12,
+                  borderRadius: 999,
+                  backgroundColor: "rgba(101,154,116,0.24)",
+                }}
+              />
+              <View
+                pointerEvents="none"
+                style={{
+                  position: "absolute",
+                  right: "3%",
+                  bottom: "4%",
+                  width: "18%",
+                  height: "17%",
+                  borderTopLeftRadius: 26,
+                  backgroundColor: "rgba(135,210,238,0.45)",
+                }}
                 />
-              ))}
             </View>
           </View>
 
@@ -397,15 +458,180 @@ function ChickLogo() {
   );
 }
 
+function NagoyaMapBackdrop() {
+  return (
+    <View pointerEvents="none" style={{ position: "absolute", inset: 0 }}>
+      <View
+        style={{
+          position: "absolute",
+          left: "8%",
+          top: "9%",
+          width: "76%",
+          height: "78%",
+          borderRadius: 46,
+          borderCurve: "continuous",
+          backgroundColor: "rgba(255,255,255,0.16)",
+          borderColor: "rgba(255,255,255,0.3)",
+          borderWidth: 2,
+        }}
+      />
+      <View
+        style={{
+          position: "absolute",
+          left: "8%",
+          top: "28%",
+          right: "9%",
+          height: 7,
+          borderRadius: 999,
+          backgroundColor: "rgba(255,255,255,0.42)",
+          transform: [{ rotate: "13deg" }],
+        }}
+      />
+      <View
+        style={{
+          position: "absolute",
+          left: "5%",
+          top: "59%",
+          right: "15%",
+          height: 9,
+          borderRadius: 999,
+          backgroundColor: "rgba(255,255,255,0.46)",
+          transform: [{ rotate: "-8deg" }],
+        }}
+      />
+      <View
+        style={{
+          position: "absolute",
+          right: "1%",
+          bottom: "2%",
+          width: "28%",
+          height: "23%",
+          borderTopLeftRadius: 30,
+          backgroundColor: "rgba(117,198,230,0.42)",
+        }}
+      />
+      <Text
+        selectable
+        style={{
+          position: "absolute",
+          right: "6%",
+          bottom: "8%",
+          color: "rgba(71,116,138,0.72)",
+          fontSize: 11,
+          fontWeight: "900",
+        }}
+      >
+        名古屋港
+      </Text>
+    </View>
+  );
+}
+
+function PlasticPile({ height, opacity }: { height: number; opacity: number }) {
+  if (height <= 1) return null;
+
+  const frontWidth = clamp(height * 0.42, 18, 34);
+
+  return (
+    <View
+      pointerEvents="none"
+      style={{
+        position: "absolute",
+        left: "50%",
+        bottom: 22,
+        width: frontWidth + 14,
+        height: height + 16,
+        opacity,
+        transform: [{ translateX: -(frontWidth + 14) / 2 }],
+      }}
+    >
+      <View
+        style={{
+          position: "absolute",
+          left: 4,
+          bottom: 0,
+          width: frontWidth,
+          height,
+          borderRadius: 8,
+          backgroundColor: "rgba(147,214,236,0.82)",
+          borderColor: "rgba(255,255,255,0.82)",
+          borderWidth: 2,
+        }}
+      />
+      <View
+        style={{
+          position: "absolute",
+          left: 9,
+          bottom: 5,
+          width: frontWidth,
+          height,
+          borderTopRightRadius: 8,
+          borderBottomRightRadius: 8,
+          backgroundColor: "rgba(81,164,196,0.46)",
+          transform: [{ skewY: "-18deg" }],
+        }}
+      />
+      <View
+        style={{
+          position: "absolute",
+          left: 9,
+          bottom: height - 3,
+          width: frontWidth,
+          height: 14,
+          borderRadius: 8,
+          backgroundColor: "rgba(211,244,255,0.88)",
+          borderColor: "rgba(255,255,255,0.9)",
+          borderWidth: 2,
+          transform: [{ skewX: "-28deg" }],
+        }}
+      />
+      <View
+        style={{
+          position: "absolute",
+          left: frontWidth * 0.34,
+          bottom: height + 8,
+          width: 9,
+          height: 9,
+          borderRadius: 3,
+          backgroundColor: "#7cc6dc",
+          borderColor: "#fff",
+          borderWidth: 1,
+        }}
+      />
+      <View
+        style={{
+          position: "absolute",
+          left: frontWidth * 0.2,
+          bottom: 8,
+          width: frontWidth * 0.52,
+          height: Math.max(8, height - 16),
+          borderRadius: 999,
+          borderColor: "rgba(255,255,255,0.68)",
+          borderWidth: 2,
+        }}
+      />
+    </View>
+  );
+}
+
 function WardTile({
   ward,
-  size,
+  width,
+  height,
+  placement,
   selected,
   sparkling,
   onPress,
 }: {
   ward: Ward;
-  size: number;
+  width: number;
+  height: number;
+  placement: {
+    left: number;
+    top: number;
+    radius: number;
+    rotate: string;
+  };
   selected: boolean;
   sparkling: boolean;
   onPress: () => void;
@@ -441,16 +667,27 @@ function WardTile({
 
   const fogOpacity = clamp(0.9 - ward.clearRate / 118, 0, 0.9);
   const cityOpacity = clamp(0.36 + ward.clearRate / 125, 0.36, 1);
+  const plasticHeight = clamp(height * (0.64 - ward.clearRate / 170), 0, height * 0.64);
+  const plasticOpacity = ward.clearRate >= 100 ? 0 : clamp(0.3 + (100 - ward.clearRate) / 120, 0.3, 0.96);
 
   return (
-    <Animated.View style={{ transform: [{ scale }] }}>
+    <Animated.View
+      style={{
+        position: "absolute",
+        left: placement.left,
+        top: placement.top,
+        width,
+        height,
+        transform: [{ rotate: placement.rotate }, { scale }],
+      }}
+    >
       <Pressable
         onPress={onPress}
         style={({ pressed }) => ({
-          width: size,
-          height: size * 1.03,
+          width,
+          height,
           overflow: "hidden",
-          borderRadius: 20,
+          borderRadius: placement.radius,
           borderCurve: "continuous",
           backgroundColor: ward.color,
           borderColor: selected ? "#ffd86b" : "rgba(255,255,255,0.86)",
@@ -459,13 +696,14 @@ function WardTile({
         })}
       >
         <CityIllustration opacity={cityOpacity} />
+        <PlasticPile height={plasticHeight} opacity={plasticOpacity} />
 
         <View
           pointerEvents="none"
           style={{
             position: "absolute",
             inset: 0,
-            opacity: fogOpacity,
+            opacity: fogOpacity * 0.55,
             backgroundColor: "#f6fbff",
           }}
         >
@@ -494,7 +732,7 @@ function WardTile({
             position: "absolute",
             left: 7,
             top: 7,
-            maxWidth: size - 14,
+            maxWidth: width - 14,
             paddingHorizontal: 6,
             paddingVertical: 3,
             borderRadius: 999,
@@ -568,7 +806,7 @@ function WardTile({
                 {
                   translateX: sparkle.interpolate({
                     inputRange: [0, 1],
-                    outputRange: [-40, size + 40],
+                    outputRange: [-40, width + 40],
                   }),
                 },
               ],
@@ -834,6 +1072,9 @@ function DetailPanel({ ward }: { ward: Ward }) {
       </View>
       <Text selectable style={{ color: "#7b6b57", fontSize: 14, fontWeight: "700", lineHeight: 22 }}>
         投稿数: {formatNumber(ward.posts)}件
+      </Text>
+      <Text selectable style={{ color: "#7b6b57", fontSize: 14, fontWeight: "700", lineHeight: 22 }}>
+        残っているプラスチックの高さ: {100 - ward.clearRate}%
       </Text>
       <Text selectable style={{ color: "#7b6b57", fontSize: 14, fontWeight: "700", lineHeight: 22 }}>
         {getMessage(ward)}

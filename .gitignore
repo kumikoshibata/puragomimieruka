@@ -5,5 +5,6 @@ web-build/
 expo-android*.log
 expo-android*.err
 pikapikamap-screen*.png
+pikapikamap-map*.png
 npm-debug.log*
 .DS_Store
