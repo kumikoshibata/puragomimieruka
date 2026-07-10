@@ -1,0 +1,25 @@
+{
+  "expo": {
+    "name": "なごやピカピカマップ",
+    "slug": "nagoya-pikapika-map",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "nagoyapikapika",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "android": {
+      "package": "com.pikapikamap.app",
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "single"
+    },
+    "experiments": {
+      "autolinkingModuleResolution": true
+    },
+    "plugins": [
+      "expo-router"
+    ]
+  }
+}
