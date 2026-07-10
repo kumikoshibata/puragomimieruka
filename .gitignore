@@ -6,5 +6,6 @@ expo-android*.log
 expo-android*.err
 pikapikamap-screen*.png
 pikapikamap-map*.png
+pikapikamap-trash*.png
 npm-debug.log*
 .DS_Store

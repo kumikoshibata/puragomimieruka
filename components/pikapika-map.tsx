@@ -527,10 +527,43 @@ function NagoyaMapBackdrop() {
   );
 }
 
-function PlasticPile({ height, opacity }: { height: number; opacity: number }) {
+function PlasticPile({
+  height,
+  opacity,
+  areaWidth,
+  areaHeight,
+}: {
+  height: number;
+  opacity: number;
+  areaWidth: number;
+  areaHeight: number;
+}) {
   if (height <= 1) return null;
 
-  const frontWidth = clamp(height * 0.42, 18, 34);
+  const remaining = clamp(height / (areaHeight * 0.64), 0, 1);
+  const pileWidth = clamp(areaWidth * (0.7 + remaining * 0.32), 36, areaWidth * 1.04);
+  const baseSize = clamp(Math.min(areaWidth, areaHeight) * 0.23, 12, 22);
+  const visibleTrashCount = Math.round(5 + remaining * 13);
+  const trashPieces = [
+    { kind: "bottle", x: 8, y: 58, rotate: "-24deg", scale: 1.08, color: "#9ed8f2" },
+    { kind: "bag", x: 24, y: 54, rotate: "12deg", scale: 1.05, color: "#e7f9ff" },
+    { kind: "cup", x: 48, y: 58, rotate: "-8deg", scale: 0.9, color: "#c9f1ff" },
+    { kind: "tray", x: 66, y: 62, rotate: "15deg", scale: 1.05, color: "#dff6ff" },
+    { kind: "bottle", x: 36, y: 43, rotate: "21deg", scale: 1.0, color: "#bcebd1" },
+    { kind: "bag", x: 58, y: 42, rotate: "-18deg", scale: 0.95, color: "#fff7fb" },
+    { kind: "bottle", x: 14, y: 38, rotate: "34deg", scale: 0.86, color: "#9ed8f2" },
+    { kind: "cup", x: 74, y: 40, rotate: "-22deg", scale: 0.82, color: "#eafaff" },
+    { kind: "tray", x: 44, y: 29, rotate: "-7deg", scale: 0.82, color: "#f4fbff" },
+    { kind: "bottle", x: 62, y: 24, rotate: "27deg", scale: 0.78, color: "#b6e8fa" },
+    { kind: "bag", x: 27, y: 25, rotate: "-28deg", scale: 0.78, color: "#ffffff" },
+    { kind: "cup", x: 8, y: 22, rotate: "16deg", scale: 0.72, color: "#d7f7ff" },
+    { kind: "bottle", x: 49, y: 12, rotate: "-31deg", scale: 0.68, color: "#aee5f7" },
+    { kind: "tray", x: 71, y: 14, rotate: "20deg", scale: 0.66, color: "#eefcff" },
+    { kind: "bag", x: 31, y: 7, rotate: "11deg", scale: 0.62, color: "#fffefa" },
+    { kind: "bottle", x: 15, y: 8, rotate: "-11deg", scale: 0.56, color: "#c7f4ff" },
+    { kind: "cup", x: 58, y: 2, rotate: "-2deg", scale: 0.54, color: "#e4fbff" },
+    { kind: "bottle", x: 41, y: 0, rotate: "18deg", scale: 0.52, color: "#9ed8f2" },
+  ] as const;
 
   return (
     <View
@@ -538,78 +571,251 @@ function PlasticPile({ height, opacity }: { height: number; opacity: number }) {
       style={{
         position: "absolute",
         left: "50%",
-        bottom: 22,
-        width: frontWidth + 14,
-        height: height + 16,
+        bottom: 14,
+        width: pileWidth,
+        height: height + 18,
         opacity,
-        transform: [{ translateX: -(frontWidth + 14) / 2 }],
+        transform: [{ translateX: -pileWidth / 2 }],
+        zIndex: 2,
       }}
     >
       <View
         style={{
           position: "absolute",
-          left: 4,
+          left: "6%",
+          right: "6%",
           bottom: 0,
-          width: frontWidth,
-          height,
-          borderRadius: 8,
-          backgroundColor: "rgba(147,214,236,0.82)",
-          borderColor: "rgba(255,255,255,0.82)",
-          borderWidth: 2,
-        }}
-      />
-      <View
-        style={{
-          position: "absolute",
-          left: 9,
-          bottom: 5,
-          width: frontWidth,
-          height,
-          borderTopRightRadius: 8,
-          borderBottomRightRadius: 8,
-          backgroundColor: "rgba(81,164,196,0.46)",
-          transform: [{ skewY: "-18deg" }],
-        }}
-      />
-      <View
-        style={{
-          position: "absolute",
-          left: 9,
-          bottom: height - 3,
-          width: frontWidth,
-          height: 14,
-          borderRadius: 8,
-          backgroundColor: "rgba(211,244,255,0.88)",
-          borderColor: "rgba(255,255,255,0.9)",
-          borderWidth: 2,
-          transform: [{ skewX: "-28deg" }],
-        }}
-      />
-      <View
-        style={{
-          position: "absolute",
-          left: frontWidth * 0.34,
-          bottom: height + 8,
-          width: 9,
-          height: 9,
-          borderRadius: 3,
-          backgroundColor: "#7cc6dc",
-          borderColor: "#fff",
-          borderWidth: 1,
-        }}
-      />
-      <View
-        style={{
-          position: "absolute",
-          left: frontWidth * 0.2,
-          bottom: 8,
-          width: frontWidth * 0.52,
-          height: Math.max(8, height - 16),
+          height: clamp(height * 0.18, 8, 18),
           borderRadius: 999,
-          borderColor: "rgba(255,255,255,0.68)",
-          borderWidth: 2,
+          backgroundColor: "rgba(55,113,132,0.18)",
         }}
       />
+      <View
+        style={{
+          position: "absolute",
+          left: "8%",
+          right: "8%",
+          bottom: 3,
+          height: clamp(height * 0.62, 18, areaHeight * 0.42),
+          borderTopLeftRadius: 40,
+          borderTopRightRadius: 40,
+          borderBottomLeftRadius: 16,
+          borderBottomRightRadius: 16,
+          backgroundColor: "rgba(171,224,237,0.32)",
+          borderColor: "rgba(255,255,255,0.42)",
+          borderWidth: 1,
+          transform: [{ scaleX: 1.08 }],
+        }}
+      />
+      {trashPieces.slice(0, visibleTrashCount).map((piece, index) => (
+        <TrashPiece
+          key={`${piece.kind}-${index}`}
+          kind={piece.kind}
+          color={piece.color}
+          size={baseSize * piece.scale}
+          x={(piece.x / 100) * pileWidth}
+          y={(piece.y / 100) * height}
+          rotate={piece.rotate}
+          depth={index}
+        />
+      ))}
+    </View>
+  );
+}
+
+function TrashPiece({
+  kind,
+  color,
+  size,
+  x,
+  y,
+  rotate,
+  depth,
+}: {
+  kind: "bottle" | "bag" | "cup" | "tray";
+  color: string;
+  size: number;
+  x: number;
+  y: number;
+  rotate: string;
+  depth: number;
+}) {
+  const commonStyle = {
+    position: "absolute" as const,
+    left: x,
+    bottom: y,
+    transform: [{ rotate }],
+    opacity: 0.88,
+  };
+
+  if (kind === "bag") {
+    return (
+      <View style={commonStyle}>
+        <View
+          style={{
+            width: size * 1.45,
+            height: size * 1.1,
+            borderRadius: size * 0.35,
+            borderCurve: "continuous",
+            backgroundColor: color,
+            borderColor: "rgba(255,255,255,0.92)",
+            borderWidth: 2,
+            transform: [{ skewX: depth % 2 === 0 ? "-8deg" : "10deg" }],
+            boxShadow: "0 2px 4px rgba(64,96,108,0.12)",
+          }}
+        >
+          <View
+            style={{
+              position: "absolute",
+              left: size * 0.25,
+              top: size * 0.18,
+              width: size * 0.8,
+              height: size * 0.24,
+              borderRadius: 999,
+              borderColor: "rgba(126,185,205,0.38)",
+              borderWidth: 2,
+            }}
+          />
+          <View
+            style={{
+              position: "absolute",
+              left: size * 0.1,
+              right: size * 0.12,
+              bottom: size * 0.16,
+              height: 2,
+              borderRadius: 999,
+              backgroundColor: "rgba(126,185,205,0.22)",
+            }}
+          />
+        </View>
+      </View>
+    );
+  }
+
+  if (kind === "cup") {
+    return (
+      <View style={commonStyle}>
+        <View
+          style={{
+            width: size * 0.92,
+            height: size * 1.05,
+            borderTopLeftRadius: size * 0.24,
+            borderTopRightRadius: size * 0.24,
+            borderBottomLeftRadius: size * 0.34,
+            borderBottomRightRadius: size * 0.34,
+            backgroundColor: color,
+            borderColor: "rgba(255,255,255,0.92)",
+            borderWidth: 2,
+            boxShadow: "0 2px 4px rgba(64,96,108,0.12)",
+          }}
+        >
+          <View
+            style={{
+              position: "absolute",
+              left: -2,
+              right: -2,
+              top: -2,
+              height: size * 0.22,
+              borderRadius: 999,
+              backgroundColor: "rgba(255,255,255,0.86)",
+              borderColor: "rgba(126,185,205,0.32)",
+              borderWidth: 1,
+            }}
+          />
+          <View
+            style={{
+              position: "absolute",
+              left: size * 0.18,
+              top: size * 0.34,
+              width: size * 0.48,
+              height: 2,
+              backgroundColor: "rgba(126,185,205,0.28)",
+            }}
+          />
+        </View>
+      </View>
+    );
+  }
+
+  if (kind === "tray") {
+    return (
+      <View style={commonStyle}>
+        <View
+          style={{
+            width: size * 1.45,
+            height: size * 0.76,
+            borderRadius: size * 0.24,
+            backgroundColor: color,
+            borderColor: "rgba(255,255,255,0.9)",
+            borderWidth: 2,
+            transform: [{ skewX: "-16deg" }],
+            boxShadow: "0 2px 4px rgba(64,96,108,0.12)",
+          }}
+        >
+          <View
+            style={{
+              position: "absolute",
+              inset: 3,
+              borderRadius: size * 0.16,
+              borderColor: "rgba(126,185,205,0.28)",
+              borderWidth: 1,
+            }}
+          />
+        </View>
+      </View>
+    );
+  }
+
+  return (
+    <View style={commonStyle}>
+      <View
+        style={{
+          width: size * 0.72,
+          height: size * 1.92,
+          borderRadius: size * 0.22,
+          backgroundColor: color,
+          borderColor: "rgba(255,255,255,0.96)",
+          borderWidth: 2,
+          boxShadow: "0 2px 4px rgba(64,96,108,0.13)",
+        }}
+      >
+        <View
+          style={{
+            position: "absolute",
+            left: size * 0.17,
+            top: -size * 0.28,
+            width: size * 0.38,
+            height: size * 0.34,
+            borderTopLeftRadius: size * 0.09,
+            borderTopRightRadius: size * 0.09,
+            backgroundColor: "#75c99a",
+            borderColor: "rgba(255,255,255,0.96)",
+            borderWidth: 1,
+          }}
+        />
+        <View
+          style={{
+            position: "absolute",
+            left: size * 0.1,
+            right: size * 0.1,
+            top: size * 0.62,
+            height: size * 0.38,
+            borderRadius: 4,
+            backgroundColor: "rgba(255,255,255,0.46)",
+          }}
+        />
+        <View
+          style={{
+            position: "absolute",
+            left: size * 0.12,
+            top: size * 0.12,
+            width: 2,
+            bottom: size * 0.18,
+            borderRadius: 999,
+            backgroundColor: "rgba(255,255,255,0.72)",
+          }}
+        />
+      </View>
     </View>
   );
 }
@@ -667,8 +873,9 @@ function WardTile({
 
   const fogOpacity = clamp(0.9 - ward.clearRate / 118, 0, 0.9);
   const cityOpacity = clamp(0.36 + ward.clearRate / 125, 0.36, 1);
-  const plasticHeight = clamp(height * (0.64 - ward.clearRate / 170), 0, height * 0.64);
-  const plasticOpacity = ward.clearRate >= 100 ? 0 : clamp(0.3 + (100 - ward.clearRate) / 120, 0.3, 0.96);
+  const remainingPlastic = (100 - ward.clearRate) / 100;
+  const plasticHeight = height * (0.18 + remainingPlastic * 0.62);
+  const plasticOpacity = ward.clearRate >= 100 ? 0 : clamp(0.38 + remainingPlastic * 0.62, 0.38, 1);
 
   return (
     <Animated.View
@@ -696,7 +903,6 @@ function WardTile({
         })}
       >
         <CityIllustration opacity={cityOpacity} />
-        <PlasticPile height={plasticHeight} opacity={plasticOpacity} />
 
         <View
           pointerEvents="none"
@@ -722,6 +928,13 @@ function WardTile({
             />
           ))}
         </View>
+
+        <PlasticPile
+          height={plasticHeight}
+          opacity={plasticOpacity}
+          areaWidth={width}
+          areaHeight={height}
+        />
 
         <Text
           selectable
