@@ -540,10 +540,10 @@ function PlasticPile({
 }) {
   if (height <= 1) return null;
 
-  const remaining = clamp(height / (areaHeight * 0.64), 0, 1);
-  const pileWidth = clamp(areaWidth * (0.7 + remaining * 0.32), 36, areaWidth * 1.04);
-  const baseSize = clamp(Math.min(areaWidth, areaHeight) * 0.23, 12, 22);
-  const visibleTrashCount = Math.round(5 + remaining * 13);
+  const remaining = clamp((height - areaHeight * 0.18) / (areaHeight * 0.62), 0, 1);
+  const pileWidth = clamp(areaWidth * (0.82 + remaining * 0.3), 42, areaWidth * 1.12);
+  const baseSize = clamp(Math.min(areaWidth, areaHeight) * 0.25, 13, 23);
+  const visibleTrashCount = Math.round(7 + remaining * 11);
   const trashPieces = [
     { kind: "bottle", x: 8, y: 58, rotate: "-24deg", scale: 1.08, color: "#9ed8f2" },
     { kind: "bag", x: 24, y: 54, rotate: "12deg", scale: 1.05, color: "#e7f9ff" },
@@ -571,9 +571,9 @@ function PlasticPile({
       style={{
         position: "absolute",
         left: "50%",
-        bottom: 14,
+        bottom: 12,
         width: pileWidth,
-        height: height + 18,
+        height: height + 24,
         opacity,
         transform: [{ translateX: -pileWidth / 2 }],
         zIndex: 2,
@@ -585,26 +585,38 @@ function PlasticPile({
           left: "6%",
           right: "6%",
           bottom: 0,
-          height: clamp(height * 0.18, 8, 18),
+          height: clamp(height * 0.2, 10, 22),
           borderRadius: 999,
-          backgroundColor: "rgba(55,113,132,0.18)",
+          backgroundColor: "rgba(54,89,101,0.22)",
         }}
       />
       <View
         style={{
           position: "absolute",
-          left: "8%",
-          right: "8%",
+          left: "1%",
+          right: "1%",
           bottom: 3,
-          height: clamp(height * 0.62, 18, areaHeight * 0.42),
-          borderTopLeftRadius: 40,
-          borderTopRightRadius: 40,
-          borderBottomLeftRadius: 16,
-          borderBottomRightRadius: 16,
-          backgroundColor: "rgba(171,224,237,0.32)",
-          borderColor: "rgba(255,255,255,0.42)",
+          height: clamp(height * 0.55, 22, areaHeight * 0.48),
+          borderTopLeftRadius: 48,
+          borderTopRightRadius: 48,
+          borderBottomLeftRadius: 20,
+          borderBottomRightRadius: 20,
+          backgroundColor: "rgba(106,178,196,0.2)",
+          transform: [{ scaleX: 1.08 }, { skewX: "-6deg" }],
+        }}
+      />
+      <View
+        style={{
+          position: "absolute",
+          left: "12%",
+          right: "10%",
+          bottom: height * 0.28,
+          height: clamp(height * 0.34, 16, areaHeight * 0.3),
+          borderRadius: 999,
+          backgroundColor: "rgba(255,255,255,0.3)",
+          borderColor: "rgba(255,255,255,0.36)",
           borderWidth: 1,
-          transform: [{ scaleX: 1.08 }],
+          transform: [{ rotate: "-10deg" }],
         }}
       />
       {trashPieces.slice(0, visibleTrashCount).map((piece, index) => (
@@ -645,7 +657,8 @@ function TrashPiece({
     left: x,
     bottom: y,
     transform: [{ rotate }],
-    opacity: 0.88,
+    opacity: 0.94,
+    zIndex: depth,
   };
 
   if (kind === "bag") {
@@ -661,7 +674,7 @@ function TrashPiece({
             borderColor: "rgba(255,255,255,0.92)",
             borderWidth: 2,
             transform: [{ skewX: depth % 2 === 0 ? "-8deg" : "10deg" }],
-            boxShadow: "0 2px 4px rgba(64,96,108,0.12)",
+            boxShadow: "3px 6px 7px rgba(64,96,108,0.18)",
           }}
         >
           <View
@@ -706,7 +719,7 @@ function TrashPiece({
             backgroundColor: color,
             borderColor: "rgba(255,255,255,0.92)",
             borderWidth: 2,
-            boxShadow: "0 2px 4px rgba(64,96,108,0.12)",
+            boxShadow: "3px 6px 7px rgba(64,96,108,0.18)",
           }}
         >
           <View
@@ -749,7 +762,7 @@ function TrashPiece({
             borderColor: "rgba(255,255,255,0.9)",
             borderWidth: 2,
             transform: [{ skewX: "-16deg" }],
-            boxShadow: "0 2px 4px rgba(64,96,108,0.12)",
+            boxShadow: "3px 6px 7px rgba(64,96,108,0.18)",
           }}
         >
           <View
@@ -776,7 +789,7 @@ function TrashPiece({
           backgroundColor: color,
           borderColor: "rgba(255,255,255,0.96)",
           borderWidth: 2,
-          boxShadow: "0 2px 4px rgba(64,96,108,0.13)",
+          boxShadow: "3px 7px 8px rgba(64,96,108,0.2)",
         }}
       >
         <View
@@ -949,10 +962,12 @@ function WardTile({
             paddingHorizontal: 6,
             paddingVertical: 3,
             borderRadius: 999,
-            backgroundColor: "rgba(255,255,255,0.74)",
+            backgroundColor: "rgba(255,255,255,0.94)",
             color: "#4d4031",
             fontSize: 11,
             fontWeight: "900",
+            zIndex: 8,
+            boxShadow: "0 2px 5px rgba(86,68,44,0.16)",
           }}
         >
           {ward.name}
@@ -996,6 +1011,8 @@ function WardTile({
             fontWeight: "900",
             textAlign: "center",
             fontVariant: ["tabular-nums"],
+            zIndex: 8,
+            boxShadow: "0 2px 5px rgba(86,68,44,0.14)",
           }}
         >
           {ward.clearRate}%
